@@ -7,7 +7,15 @@ library(tidyverse)
 library(googlesheets)
 library(knitr)
 library(kableExtra)
+library(lubridate)
 
+#Function to turn Parise into Spooner
+spooner <- function(x, ...){
+  if(x == "Parise" | x == "parise"){
+    x <- "Spooner"
+  }
+  return(x)
+}
 
 c5_key <- "1SWieEZJdL0sO4IgJL8Bv5-6O1LciNAAbBFIQGI-XNRA"
 c5_time_ss <- gs_key(c5_key)
@@ -19,9 +27,33 @@ emails <- c5_time$`Email Address`
 
 c5_team_names <- c5_time$`Email Address` %>% str_remove("@cookcountyil.gov") %>%  str_replace("\\.", " ") %>% str_to_title() %>% unique()
 
+#take the email address and turn it into first and last names. Now with 100% more regex! 
 c5_time <- c5_time %>% 
   mutate(first_name = str_extract(`Email Address`, "\\p{L}+(?=\\.)") %>% str_to_title()) %>% 
   mutate(last_name = str_extract(`Email Address`, "(?<=\\.)\\p{L}+") %>% str_to_title()) %>% 
-  select(1, first_name, last_name, everything(), -2, -3)
+  select(1, first_name, last_name, everything(), -2, -3) %>%
+  rename(Timestamp = Date.Entered)# heavy lifting
 
+c5_time$last_name <- c5_time$last_name %>% map(spooner) %>% as.character() #fixing spooner's name
+
+```
+
+```{r, hours_worked, include = TRUE, message = FALSE, echo = FALSE}
+
+c5_time %>% group_by(first_name, last_name) %>% summarize(Hours_worked = sum(`Hours worked on project`)) %>% arrange(Hours_worked) %>% ggplot(aes(x = last_name, y = Hours_worked, fill = last_name)) + geom_bar(stat = "identity") + geom_hline(aes(yintercept = mean(c5_time$`Hours worked on project`), fill = "black"))
+
+
+
+```
+
+```{r, tasks_count, include = TRUE, message = FALSE, echo = FALSE}
+
+c5_time %>% group_by(first_name, last_name) %>% summarize(Tasks_entered = n(), total_hours = sum(`Hours worked on project`))
+
+```
+
+```{r, tasks_date, include = TRUE, message = FALSE, echo = FALSE}
+
+c5_time %>% select(1) %>% dmy()
+                                                          
 ```
