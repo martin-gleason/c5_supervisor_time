@@ -1,6 +1,27 @@
----
+gi---
 title: "R Notebook"
 output: html_notebook
 --
 ```{r, packages, include = TRUE, message = FALSE, echo = FALSE}
+library(tidyverse)
+library(googlesheets)
+library(knitr)
+library(kableExtra)
+
+
+c5_key <- "1SWieEZJdL0sO4IgJL8Bv5-6O1LciNAAbBFIQGI-XNRA"
+c5_time_ss <- gs_key(c5_key)
+
+c5_time <- gs_read(c5_time_ss)
+
+
+emails <- c5_time$`Email Address`
+
+c5_team_names <- c5_time$`Email Address` %>% str_remove("@cookcountyil.gov") %>%  str_replace("\\.", " ") %>% str_to_title() %>% unique()
+
+c5_time <- c5_time %>% 
+  mutate(first_name = str_extract(`Email Address`, "\\p{L}+(?=\\.)") %>% str_to_title()) %>% 
+  mutate(last_name = str_extract(`Email Address`, "(?<=\\.)\\p{L}+") %>% str_to_title()) %>% 
+  select(1, first_name, last_name, everything(), -2, -3)
+
 ```
