@@ -12,6 +12,7 @@ library(googlesheets)
 library(knitr)
 library(kableExtra)
 library(lubridate)
+library(viridisLite)
 
 #Function to turn Parise into Spooner
 spooner <- function(x, ...){
@@ -53,7 +54,10 @@ c5_time %>% kable(booktabs = TRUE)
 
 ```{r, hours_worked, include = TRUE, message = FALSE, echo = FALSE}
 
-c5_time %>% group_by(first_name, last_name) %>% summarize(Hours_worked = sum(`Hours worked on project`)) %>% arrange(Hours_worked) %>% ggplot(aes(x = last_name, y = Hours_worked, fill = last_name)) + geom_bar(stat = "identity") + geom_hline(aes(yintercept = mean(c5_time$`Hours worked on project`)))
+c5_time %>% group_by(first_name, last_name) %>% summarize(Hours_worked = sum(`Hours worked on project`)) %>% arrange(Hours_worked) %>% ggplot(aes(x = last_name, y = Hours_worked, fill = last_name)) + 
+  geom_bar(stat = "identity") +
+  #scale_fill_continuous(colors =  viridis( n = 5, option = "E")) + 
+  geom_hline(aes(yintercept = mean(c5_time$`Hours worked on project`)))
 
 
 
