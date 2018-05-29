@@ -74,7 +74,7 @@ c5_time %>% summarize(Tasks_entered = n(), total_hours = sum(`Hours worked on pr
 
 ```
 ```{r, person_hours, inclue = TRUE, message = FALSE, echo = FALSE}
-c5_time %>% summarize(`Tasks Entered` = n(), ` Total Hours` = sum(`Hours worked on project`))
+c5_time %>% summarize(`Tasks Entered` = n(), ` Total Hours` = sum(`Hours worked on project`)) 
 ```
 ```{r, tasks_date, include = TRUE, message = FALSE, echo = FALSE}
 c5_time %>% mutate(elapsed = `Date Worked On` - date_entered) %>% 
