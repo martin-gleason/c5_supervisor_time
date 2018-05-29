@@ -1,11 +1,27 @@
 ---
-output:
-  pdf_document: default
-  html_document: default
----
 title: "Supervisor Timesheets"
-output: html_notebook
---
+output:
+  pdf_document:
+    fig_caption: yes
+    df_print: kable
+    keep_tex: yes
+  header-includes: 
+  - \usepackage{booktabs}
+   \usepackage{longtable}
+  - \usepackage{array}
+  - \usepackage{multirow}
+  - \usepackage[table]{xcolor}
+  - \usepackage{wrapfig}
+   \usepackage{float}
+  - \usepackage{colortbl}
+  - \usepackage{pdflscape}
+  - \usepackage{tabu}
+  - \usepackage{threeparttable}
+  - \usepackage{threeparttablex}
+  - \usepackage[normalem]{ulem}
+  - \usepackage{makecell}
+---
+
 ```{r, packages, include = TRUE, message = FALSE, echo = FALSE}
 library(tidyverse)
 library(googlesheets)
@@ -13,7 +29,11 @@ library(knitr)
 library(kableExtra)
 library(lubridate)
 library(viridis)
+options(knitr.table.format = "latex")
+opts_chunk$set(fig.pos = "h")
+```
 
+```{r, data, include = TRUE, message = FALSE, echo = FALSE}
 #Function to turn Parise into Spooner
 spooner <- function(x, ...){
   if(x == "Parise" | x == "parise"){
@@ -45,39 +65,69 @@ c5_time$last_name <- c5_time$last_name %>% map(spooner) %>% as.character() #fixi
  c5_time$date_entered <- c5_time$date_entered %>% mdy_hms()
  c5_time$`Date Worked On` <- c5_time$`Date Worked On` %>% mdy(tz = "UTC")
 
+ 
+c5_tasks_hours <- c5_time %>% summarize(`Tasks Entered` = n(), ` Total Hours` = sum(`Hours worked on project`))
+```
+The following PDF is an example of the work that can be done with R to automate the reporting of the *c5 Supervisor* project. 
+
+When a member of the Steering committee inputs their task, it updates the Google spreadsheet. Then, this report works behind the scenes to access the spreadsheet and find insights that are otherwise hidden. For example, the following graph shows how many tasks were inputted by members of the committee:
+
+```{r, ssView, include = FALSE, message = FALSE, echo = FALSE, fig.pos="H"}
+
+c5_time %>% kable (caption = "Reproduced Spreadhseet", longtable = TRUE) %>%
+  kable_styling(bootstrap_options = "striped", font_size = 7) %>% landscape()
 ```
 
-```{r, ssView, include = TRUE, message = FALSE, echo = FALSE}
 
-c5_time %>% kable(booktabs = TRUE)
-```
-
-```{r, hours_worked, include = TRUE, message = FALSE, echo = FALSE}
+```{r, hours_worked, include = TRUE, message = FALSE, echo = FALSE, fig.pos="H"}
 
 c5_time %>% group_by(first_name, last_name) %>% 
   summarize(Hours_worked = sum(`Hours worked on project`)) %>% 
   arrange(Hours_worked) %>% 
   ggplot(aes(x = reorder(last_name, -Hours_worked), y = Hours_worked, fill = last_name)) + 
     geom_bar(stat = "identity") + 
-    scale_fill_viridis(option = "E", discrete = TRUE) + 
-    geom_hline(aes(yintercept = mean(c5_time$`Hours worked on project`)))
-
-
-
+    labs(x = "Task Recorded By", y = "Hours Worked", title = "Total Hours Worked") +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_fill_viridis(option = "E", discrete = TRUE, guide_legend(title = "C5 Steering Committee")) + 
+    geom_hline(aes(yintercept = mean(c5_time$`Hours worked on project`), linetype = "Average Hours Worked per Project")) + 
+    scale_linetype(name = "")
 ```
 
-```{r, tasks_count, include = TRUE, message = FALSE, echo = FALSE}
+Automating the report programatically does not just cut down on errors by eliminating the cut/copy-paste-from-a-spreadsheet-to-a-word-document step. It also allows for customization. First and foremost, the graph's labels can be edited, and the color scheme can be set to a color-blind friendly scheme. Additionally, this report can fix DCPO Spooner's name so she is attributed accordingly. 
 
-c5_time %>% group_by(first_name, last_name) %>% summarize(Tasks_entered = n(), total_hours = sum(`Hours worked on project`))
+All of the names in the document stem from the email addresses used in the form. The reason is simple: Most emails are `firstname.lastname@cookcountyil.gov`. This allows for a simple function to split the first and last name. DCPO Spooher, however, presents a challenge as her email is `melissa.parise@cookcountyil.gov`. Fixing this would be difficult in the spreadsheet, but given the nature of this report, it is a trivial task.
 
-c5_time %>% summarize(Tasks_entered = n(), total_hours = sum(`Hours worked on project`))
+In addition to graphs, tables can also be added:
+\newpage
+```{r, tasks_count, include = TRUE, message = FALSE, echo = FALSE, fig.pos="H"}
+
+c5_time %>% group_by(first_name, last_name) %>% 
+  summarize(Tasks_entered = n(), total_hours = sum(`Hours worked on project`)) %>% 
+  kable(caption = "Person Hours: C5 Project April 2018 - May 2018") %>% kable_styling(latex_options = c("striped", "bordered"))
 
 ```
-```{r, person_hours, inclue = TRUE, message = FALSE, echo = FALSE}
-c5_time %>% summarize(`Tasks Entered` = n(), ` Total Hours` = sum(`Hours worked on project`)) 
+This summarizes the tasks accomplished quickly. 
+
+```{r, person_hours, inclue = TRUE, message = FALSE, echo = FALSE, fig.pos="H"}
+c5_tasks_hours %>% kable(caption = "Total Tasks and Hours")
 ```
-```{r, tasks_date, include = TRUE, message = FALSE, echo = FALSE}
+The above table can also be cited within the text. For instance, the total number of tasks are `r c5_tasks_hours %>% select(1) %>% pull()` and the total hours worked on the project to date is `r c5_tasks_hours %>% select(2) %>% pull()`. 
+
+Lastly, the tables could be grouped by date.
+```{r, table_by_dates, include = TRUE, message = FALSE, echo = FALSE}
+
+c5_time  %>% mutate(`Month Completed` = `Date Worked On` %>% month(label = TRUE)) %>% group_by(last_name, `Month Completed`) %>% 
+  summarize("Number of Projects" = n(), 
+            "Total Hours Per Month" = sum(`Hours worked on project`)) %>% 
+  kable(caption = "Task per Month") %>% kable_styling(latex_options =  "striped", stripe_color = "blue")
+```
+This would allow for quick, easy, and repeateable reporting with a few extra lines of code, all without having to cut and paste between Excel/Google Sheets and Word.
+
+
+```{r, tasks_date, include = FALSE, message = FALSE, echo = FALSE, fig.pos="H"}
 c5_time %>% mutate(elapsed = `Date Worked On` - date_entered) %>% 
   group_by(last_name) %>% 
-  ggplot(aes(x = `Date Worked On`, y = date_entered)) + geom_point(aes(col = last_name))
+  ggplot(aes(x = `Date Worked On`, y = date_entered)) + 
+  geom_point(aes(col = last_name)) +
+  labs(x = "Dates Worked on", y = "Dates entered", title = "Difference Between Task Completion and Form Input", col = "C5 Steering Committee Member") 
 ```
