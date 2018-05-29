@@ -12,7 +12,7 @@ library(googlesheets)
 library(knitr)
 library(kableExtra)
 library(lubridate)
-library(viridisLite)
+library(viridis)
 
 #Function to turn Parise into Spooner
 spooner <- function(x, ...){
@@ -43,7 +43,7 @@ c5_time$last_name <- c5_time$last_name %>% map(spooner) %>% as.character() #fixi
 
 #fixing dates. New quesiton: Why wont' tibbles work with lubridate?
  c5_time$date_entered <- c5_time$date_entered %>% mdy_hms()
- c5_time$`Date Worked On` <- c5_time$`Date Worked On` %>% mdy() 
+ c5_time$`Date Worked On` <- c5_time$`Date Worked On` %>% mdy(tz = "UTC")
 
 ```
 
@@ -54,10 +54,13 @@ c5_time %>% kable(booktabs = TRUE)
 
 ```{r, hours_worked, include = TRUE, message = FALSE, echo = FALSE}
 
-c5_time %>% group_by(first_name, last_name) %>% summarize(Hours_worked = sum(`Hours worked on project`)) %>% arrange(Hours_worked) %>% ggplot(aes(x = last_name, y = Hours_worked, fill = last_name)) + 
-  geom_bar(stat = "identity") +
-  #scale_fill_continuous(colors =  viridis( n = 5, option = "E")) + 
-  geom_hline(aes(yintercept = mean(c5_time$`Hours worked on project`)))
+c5_time %>% group_by(first_name, last_name) %>% 
+  summarize(Hours_worked = sum(`Hours worked on project`)) %>% 
+  arrange(Hours_worked) %>% 
+  ggplot(aes(x = reorder(last_name, -Hours_worked), y = Hours_worked, fill = last_name)) + 
+    geom_bar(stat = "identity") + 
+    scale_fill_viridis(option = "E", discrete = TRUE) + 
+    geom_hline(aes(yintercept = mean(c5_time$`Hours worked on project`)))
 
 
 
@@ -67,10 +70,14 @@ c5_time %>% group_by(first_name, last_name) %>% summarize(Hours_worked = sum(`Ho
 
 c5_time %>% group_by(first_name, last_name) %>% summarize(Tasks_entered = n(), total_hours = sum(`Hours worked on project`))
 
+c5_time %>% summarize(Tasks_entered = n(), total_hours = sum(`Hours worked on project`))
+
 ```
-
+```{r, person_hours, inclue = TRUE, message = FALSE, echo = FALSE}
+c5_time %>% summarize(`Tasks Entered` = n(), ` Total Hours` = sum(`Hours worked on project`))
+```
 ```{r, tasks_date, include = TRUE, message = FALSE, echo = FALSE}
-
-c5_time %>% select(date_entered) %>% guess_formats("dmy HMS")
-                                                          
+c5_time %>% mutate(elapsed = `Date Worked On` - date_entered) %>% 
+  group_by(last_name) %>% 
+  ggplot(aes(x = `Date Worked On`, y = date_entered)) + geom_point(aes(col = last_name))
 ```
