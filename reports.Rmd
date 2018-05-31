@@ -7,12 +7,11 @@ output:
     keep_tex: yes
   header-includes: 
   - \usepackage{booktabs}
-   \usepackage{longtable}
+  - \usepackage{longtable}
   - \usepackage{array}
   - \usepackage{multirow}
-  - \usepackage[table]{xcolor}
   - \usepackage{wrapfig}
-   \usepackage{float}
+  - \usepackage{float}
   - \usepackage{colortbl}
   - \usepackage{pdflscape}
   - \usepackage{tabu}
@@ -20,6 +19,7 @@ output:
   - \usepackage{threeparttablex}
   - \usepackage[normalem]{ulem}
   - \usepackage{makecell}
+
 ---
 
 ```{r, packages, include = TRUE, message = FALSE, echo = FALSE}
@@ -119,7 +119,7 @@ Lastly, the tables could be grouped by date.
 c5_time  %>% mutate(`Month Completed` = `Date Worked On` %>% month(label = TRUE)) %>% group_by(last_name, `Month Completed`) %>% 
   summarize("Number of Projects" = n(), 
             "Total Hours Per Month" = sum(`Hours worked on project`)) %>% 
-  kable(caption = "Task per Month") %>% kable_styling(latex_options =  "striped", stripe_color = "blue")
+  kable(caption = "Task per Month") %>% kable_styling(latex_options =  c("striped", "hover", "hold_position"), stripe_color = "pink")
 ```
 This would allow for quick, easy, and repeateable reporting with a few extra lines of code, all without having to cut and paste between Excel/Google Sheets and Word.
 
