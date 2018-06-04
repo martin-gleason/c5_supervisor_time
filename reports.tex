@@ -109,21 +109,21 @@ members of the committee:
 
 \includegraphics{reports_files/figure-latex/hours_worked-1.pdf}
 
-Automating the report programatically does not just cut down on errors
-by eliminating the cut/copy-paste-from-a-spreadsheet-to-a-word-document
-step. It also allows for customization. First and foremost, the graph's
-labels can be edited, and the color scheme can be set to a color-blind
-friendly scheme. Additionally, this report can fix DCPO Spooner's name
-so she is attributed accordingly.
+Automating the report does not just cut down on errors by eliminating
+the cut/copy-paste-from-a-spreadsheet-to-a-word-document step. It also
+allows for customization. First and foremost, the graph's labels can be
+edited, and the color scheme can be set to a color-blind friendly scheme
+(see above graph for evidence). Additionally, this report can also fix
+DCPO Spooner's name so she is attributed accordingly.
 
 All of the names in the document stem from the email addresses used in
 the form. The reason is simple: Most emails are
 \texttt{firstname.lastname@cookcountyil.gov}. This allows for a simple
-function to split the first and last name. DCPO Spooher, however,
+function to split the first and last name. DCPO Spooner, however,
 presents a challenge as her email is
-\texttt{melissa.parise@cookcountyil.gov}. Fixing this would be difficult
-in the spreadsheet, but given the nature of this report, it is a trivial
-task.
+\texttt{melissa.parise@cookcountyil.gov}. Fixing this would be time
+consuming in the spreadsheet, but given the nature of this report, it is
+a trivial task.
 
 In addition to graphs, tables can also be added: \newpage
 \rowcolors{2}{gray!6}{white}
@@ -155,10 +155,10 @@ Tamar & Stockley & 19 & 50\\
 \end{tabular}
 \end{table}
 
-\rowcolors{2}{white}{white} This summarizes the tasks accomplished
+\rowcolors{2}{white}{white} This table summarizes the tasks accomplished
 quickly.
 
-\begin{table}
+\begin{table}[!h]
 
 \caption{\label{tab:person_hours}Total Tasks and Hours}
 \centering
@@ -173,7 +173,8 @@ Tasks Entered &  Total Hours\\
 
 The above table can also be cited within the text. For instance, the
 total number of tasks are 38 and the total hours worked on the project
-to date is 96.
+to date is 96. This allows for pulling specific insights into the body
+of the text, without needing to pull additional information.
 
 Lastly, the tables could be grouped by date. \rowcolors{2}{pink}{white}
 
@@ -218,7 +219,9 @@ Williams & May & 1 & 2\\
 
 \rowcolors{2}{white}{white} This would allow for quick, easy, and
 repeateable reporting with a few extra lines of code, all without having
-to cut and paste between Excel/Google Sheets and Word.
+to cut and paste between Excel/Google Sheets and Word. In short, if the
+spreadsheet captures the data, then this report can transform it into
+the information required by the Steering Committee.
 
 
 \end{document}

@@ -21,7 +21,6 @@ output:
   - \usepackage{makecell}
 
 ---
-
 ```{r, packages, include = TRUE, message = FALSE, echo = FALSE}
 library(tidyverse)
 library(googlesheets)
@@ -93,9 +92,9 @@ c5_time %>% group_by(first_name, last_name) %>%
     scale_linetype(name = "")
 ```
 
-Automating the report programatically does not just cut down on errors by eliminating the cut/copy-paste-from-a-spreadsheet-to-a-word-document step. It also allows for customization. First and foremost, the graph's labels can be edited, and the color scheme can be set to a color-blind friendly scheme. Additionally, this report can fix DCPO Spooner's name so she is attributed accordingly. 
+Automating the report does not just cut down on errors by eliminating the cut/copy-paste-from-a-spreadsheet-to-a-word-document step. It also allows for customization. First and foremost, the graph's labels can be edited, and the color scheme can be set to a color-blind friendly scheme (see above graph for evidence). Additionally, this report can also fix DCPO Spooner's name so she is attributed accordingly. 
 
-All of the names in the document stem from the email addresses used in the form. The reason is simple: Most emails are `firstname.lastname@cookcountyil.gov`. This allows for a simple function to split the first and last name. DCPO Spooher, however, presents a challenge as her email is `melissa.parise@cookcountyil.gov`. Fixing this would be difficult in the spreadsheet, but given the nature of this report, it is a trivial task.
+All of the names in the document stem from the email addresses used in the form. The reason is simple: Most emails are `firstname.lastname@cookcountyil.gov`. This allows for a simple function to split the first and last name. DCPO Spooner, however, presents a challenge as her email is `melissa.parise@cookcountyil.gov`. Fixing this would be time consuming in the spreadsheet, but given the nature of this report, it is a trivial task.
 
 In addition to graphs, tables can also be added:
 \newpage
@@ -106,12 +105,12 @@ c5_time %>% group_by(first_name, last_name) %>%
   kable(caption = "Person Hours: C5 Project April 2018 - May 2018") %>% kable_styling(latex_options = c("striped", "bordered"))
 
 ```
-This summarizes the tasks accomplished quickly. 
+This table summarizes the tasks accomplished quickly. 
 
 ```{r, person_hours, inclue = TRUE, message = FALSE, echo = FALSE, fig.pos="H"}
-c5_tasks_hours %>% kable(caption = "Total Tasks and Hours")
+c5_tasks_hours %>% kable(caption = "Total Tasks and Hours") %>% kable_styling(latex_options =  "hold_position")
 ```
-The above table can also be cited within the text. For instance, the total number of tasks are `r c5_tasks_hours %>% select(1) %>% pull()` and the total hours worked on the project to date is `r c5_tasks_hours %>% select(2) %>% pull()`. 
+The above table can also be cited within the text. For instance, the total number of tasks are `r c5_tasks_hours %>% select(1) %>% pull()` and the total hours worked on the project to date is `r c5_tasks_hours %>% select(2) %>% pull()`. This allows for pulling specific insights into the body of the text, without needing to pull additional information.
 
 Lastly, the tables could be grouped by date.
 ```{r, table_by_dates, include = TRUE, message = FALSE, echo = FALSE}
@@ -121,7 +120,7 @@ c5_time  %>% mutate(`Month Completed` = `Date Worked On` %>% month(label = TRUE)
             "Total Hours Per Month" = sum(`Hours worked on project`)) %>% 
   kable(caption = "Task per Month") %>% kable_styling(latex_options =  c("striped", "hover", "hold_position"), stripe_color = "pink")
 ```
-This would allow for quick, easy, and repeateable reporting with a few extra lines of code, all without having to cut and paste between Excel/Google Sheets and Word.
+This would allow for quick, easy, and repeateable reporting with a few extra lines of code, all without having to cut and paste between Excel/Google Sheets and Word. In short, if the spreadsheet captures the data, then this report can transform it into the information required by the Steering Committee.
 
 
 ```{r, tasks_date, include = FALSE, message = FALSE, echo = FALSE, fig.pos="H"}
