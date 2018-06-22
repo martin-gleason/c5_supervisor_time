@@ -72,14 +72,15 @@
 }
 
 \setlength{\droptitle}{-2em}
-  \title{Supervisor Timesheets}
-  \pretitle{\vspace{\droptitle}\centering\huge}
-  \posttitle{\par}
-  \author{}
-  \preauthor{}\postauthor{}
-  \date{}
-  \predate{}\postdate{}
 
+  \title{Supervisor Timesheets}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{}
+    \preauthor{}\postauthor{}
+    \date{}
+    \predate{}\postdate{}
+  
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -138,19 +139,19 @@ In addition to graphs, tables can also be added: \newpage
 first\_name & last\_name & Tasks\_entered & total\_hours\\
 \hline
 \showrowcolors
-Kevin & Hickey & 4 & 5\\
+Kevin & Hickey & 4 & 5.0\\
 \hline
-Martin & Gleason & 3 & 7\\
+Martin & Gleason & 3 & 7.0\\
 \hline
-Melissa & Spooner & 1 & 5\\
+Melissa & Spooner & 1 & 5.0\\
 \hline
-Nicole & Paryz & 1 & 2\\
+Nicole & Paryz & 1 & 2.0\\
 \hline
-Nicole & Williams & 3 & 5\\
+Nicole & Williams & 6 & 9.5\\
 \hline
-Richard & Naujokas & 7 & 22\\
+Richard & Naujokas & 9 & 26.0\\
 \hline
-Tamar & Stockley & 19 & 50\\
+Tamar & Stockley & 19 & 50.0\\
 \hline
 \end{tabular}
 \end{table}
@@ -166,15 +167,15 @@ quickly.
 \hline
 Tasks Entered &  Total Hours\\
 \hline
-38 & 96\\
+43 & 104.5\\
 \hline
 \end{tabular}
 \end{table}
 
 The above table can also be cited within the text. For instance, the
-total number of tasks are 38 and the total hours worked on the project
-to date is 96. This allows for pulling specific insights into the body
-of the text, without needing to pull additional information.
+total number of tasks are 43 and the total hours worked on the project
+to date is 104.5. This allows for pulling specific insights into the
+body of the text, without needing to pull additional information.
 
 Lastly, the tables could be grouped by date. \rowcolors{2}{pink}{white}
 
@@ -188,31 +189,35 @@ Lastly, the tables could be grouped by date. \rowcolors{2}{pink}{white}
 last\_name & Month Completed & Number of Projects & Total Hours Per Month\\
 \hline
 \showrowcolors
-Gleason & May & 3 & 7\\
+Gleason & May & 3 & 7.0\\
 \hline
-Hickey & Mar & 1 & 2\\
+Hickey & Mar & 1 & 2.0\\
 \hline
-Hickey & Apr & 2 & 2\\
+Hickey & Apr & 2 & 2.0\\
 \hline
-Hickey & May & 1 & 1\\
+Hickey & May & 1 & 1.0\\
 \hline
-Naujokas & Apr & 1 & 14\\
+Naujokas & Apr & 1 & 14.0\\
 \hline
-Naujokas & May & 6 & 8\\
+Naujokas & May & 6 & 8.0\\
 \hline
-Paryz & Mar & 1 & 2\\
+Naujokas & Jun & 2 & 4.0\\
 \hline
-Spooner & Mar & 1 & 5\\
+Paryz & Mar & 1 & 2.0\\
 \hline
-Stockley & Mar & 7 & 13\\
+Spooner & Mar & 1 & 5.0\\
 \hline
-Stockley & Apr & 12 & 37\\
+Stockley & Mar & 7 & 13.0\\
 \hline
-Williams & Mar & 1 & 2\\
+Stockley & Apr & 12 & 37.0\\
 \hline
-Williams & Apr & 1 & 1\\
+Williams & Mar & 1 & 2.0\\
 \hline
-Williams & May & 1 & 2\\
+Williams & Apr & 1 & 1.0\\
+\hline
+Williams & May & 3 & 5.0\\
+\hline
+Williams & Jun & 1 & 1.5\\
 \hline
 \end{tabular}
 \end{table}

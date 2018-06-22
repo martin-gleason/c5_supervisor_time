@@ -1,0 +1,95 @@
+---
+title: "Supervisor Timesheets April-June"
+header-includes: 
+fontsize: 12pt
+
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    fig_caption: yes
+urlcolor: blue
+---
+```{r, packages, include = TRUE, message = FALSE, echo = FALSE}
+library(tidyverse)
+library(googlesheets)
+library(knitr)
+library(kableExtra)
+library(lubridate)
+library(viridis)
+options(knitr.table.format = "latex")
+opts_chunk$set(fig.pos = "h")
+```
+
+```{r, data, include = TRUE, message = FALSE, echo = FALSE}
+#Function to turn Parise into Spooner
+spooner <- function(x, ...){
+  if(x == "Parise" | x == "parise"){
+    x <- "Spooner"
+  }
+  return(x)
+}
+
+c5_key <- "1SWieEZJdL0sO4IgJL8Bv5-6O1LciNAAbBFIQGI-XNRA"
+c5_time_ss <- gs_key(c5_key)
+
+c5_time <- gs_read(c5_time_ss)
+
+todays_date <- format(Sys.time(),"%A %B %d %Y") %>% str_replace("y ", "y, ")
+
+c5_time$`Email Address` <- c5_time %>% select(`Email Address` ) %>% pull() %>%
+  str_replace("mz.tamar@yahoo.com", "tamar.stockley@cookcountyil.gov")
+
+
+c5_team_names <- c5_time$`Email Address` %>% 
+  str_remove("@cookcountyil.gov") %>%  
+  str_replace("\\.", " ") %>% 
+  str_to_title() %>% 
+  unique()
+
+#take the email address and turn it into first and last names. Now with 100% more regex! 
+c5_time <- c5_time %>% 
+  mutate(first_name = str_extract(`Email Address`, "\\p{L}+(?=\\.)") %>% str_to_title()) %>% 
+  mutate(last_name = str_extract(`Email Address`, "(?<=\\.)\\p{L}+") %>% str_to_title()) %>% 
+  select(1, first_name, last_name, everything(), -2, -3) %>%
+  rename(date_entered = Timestamp)# heavy lifting
+
+c5_time$last_name <- c5_time$last_name %>% 
+  map(spooner) %>% 
+  as.character() #fixing spooner's name
+
+#fixing dates. New quesiton: Why wont' tibbles work with lubridate?
+ c5_time$date_entered <- c5_time$date_entered %>% mdy_hms()
+ c5_time$`Date Worked On` <- c5_time$`Date Worked On` %>%
+   parse_date_time("m%d%Y")
+
+
+ 
+c5_tasks_hours <- c5_time %>% summarize(`Tasks Entered` = n(), 
+                                        `Total Hours` = sum(`Hours worked on project`))
+
+last_date <- max(c5_time$`Date Worked On`)
+last_enter <- max(c5_time$date_entered)
+
+number_of_tasks <- c5_tasks_hours %>% select(1) %>% pull()
+total_hours <- c5_tasks_hours %>% select(2) %>% pull()
+```
+
+As of `r todays_date`, the total number of tasks completed by the C5
+stearing committe is `r number_of_tasks`, for a total of `r total_hours` hours. This translates to `r round(total_hours/8, 0)` days. Below is a graph represents the work done by Steering Committee members.
+
+
+```{r, hours_worked, include = TRUE, message = FALSE, echo = FALSE, fig.pos="H"}
+
+c5_time %>% group_by(first_name, last_name) %>% 
+  summarize(Hours_worked = sum(`Hours worked on project`)) %>% 
+  arrange(Hours_worked) %>% 
+  ggplot(aes(x = reorder(last_name, -Hours_worked), y = Hours_worked, fill = last_name)) + 
+    geom_bar(stat = "identity") + 
+    labs(x = "Task Recorded By", y = "Hours Worked", title = "Total Hours Worked: April 2018 - June 2018") +
+    theme(axis.text.x = element_text(angle = 60, hjust = 1)) +
+    scale_fill_viridis(option = "E", discrete = TRUE, guide_legend(title = "C5 Steering Committee")) + 
+    geom_hline(aes(yintercept = mean(c5_time$`Hours worked on project`), linetype = "Average Hours Worked per Project")) + 
+    scale_linetype(name = "")
+```
+
+If additional metrics are neded, please feel free to contact [Marty](mailto:martin.gleason)
