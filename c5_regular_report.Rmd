@@ -39,6 +39,11 @@ todays_date <- format(Sys.time(),"%A %B %d %Y") %>% str_replace("y ", "y, ")
 c5_time$`Email Address` <- c5_time %>% select(`Email Address` ) %>% pull() %>%
   str_replace("mz.tamar@yahoo.com", "tamar.stockley@cookcountyil.gov")
 
+email_check <- function(email, domain_string, ...){
+  if(!email %>% str_match(domain_string)){
+    return(email)
+}
+}
 
 c5_team_names <- c5_time$`Email Address` %>% 
   str_remove("@cookcountyil.gov") %>%  
@@ -75,7 +80,7 @@ total_hours <- c5_tasks_hours %>% select(2) %>% pull()
 ```
 
 As of `r todays_date`, the total number of tasks completed by the C5
-stearing committe is `r number_of_tasks`, for a total of `r total_hours` hours. This translates to `r round(total_hours/8, 0)` days. Below is a graph represents the work done by Steering Committee members.
+steering committe is `r number_of_tasks`, for a total of `r total_hours` hours. This translates to `r round(total_hours/8, 0)` days. Below is a graph represents the work done by Steering Committee members.
 
 
 ```{r, hours_worked, include = TRUE, message = FALSE, echo = FALSE, fig.pos="H"}
